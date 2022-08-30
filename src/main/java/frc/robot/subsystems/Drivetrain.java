@@ -48,6 +48,31 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    diffDrive.arcadeDrive(RobotContainer.getJoyX()*Constants.SPEED_FACTOR, RobotContainer.getJoyY()*Constants.SPEED_FACTOR);
+    diffDrive.arcadeDrive(
+      RobotContainer.getJoyX(),
+      RobotContainer.getJoyY()*Constants.SPEED_FACTOR
+    );
   }
+
+public void arcadeDrive(double m_speed, double m_speed2) {
+}
+
+public char[] getRightEncoderCount() {
+    return null;
+}
+
+public char[] getLeftEncoderCount() {
+    return null;
+}
+
+public void resetEncoders() {
+}
+
+public int getRightDistanceInch() {
+    return 0;
+}
+
+public int getLeftDistanceInch() {
+    return 0;
+}
 }
