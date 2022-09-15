@@ -60,9 +60,10 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+        
         // Setup SmartDashboard options
-        m_chooser.setDefaultOption("Auto Routine Distance", new AutonomousDistance(m_drivetrain));
-        m_chooser.addOption("Auto Routine Time", new AutonomousTime(m_drivetrain));
+        m_chooser.setDefaultOption("Auto Routine Time", new AutonomousTime(m_drivetrain));
+        m_chooser.addOption("Auto Routine Distance", new AutonomousDistance(m_drivetrain));
         SmartDashboard.putData(m_chooser);
   }
 

@@ -26,6 +26,7 @@ public class DriveTime extends CommandBase {
   public void initialize() {
     m_startTime = System.currentTimeMillis();
     m_drive.arcadeDrive(0, 0);
+    m_drive.resetEncoders();
   }
 
   // Called every time the scheduler runs while the command is scheduled.

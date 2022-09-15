@@ -55,6 +55,10 @@ public class Drivetrain extends SubsystemBase {
   }
 
 public void arcadeDrive(double m_speed, double m_speed2) {
+  diffDrive.arcadeDrive(
+    m_speed,
+    m_speed2
+  );
 }
 
 public char[] getRightEncoderCount() {
@@ -74,5 +78,8 @@ public int getRightDistanceInch() {
 
 public int getLeftDistanceInch() {
     return 0;
+}
+public double getAverageDistanceInch() {
+  return (getLeftDistanceInch() + getRightDistanceInch()) / 2.0;
 }
 }
