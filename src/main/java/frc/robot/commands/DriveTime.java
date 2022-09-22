@@ -32,7 +32,8 @@ public class DriveTime extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_drive.arcadeDrive(m_speed, 0);
+    System.out.println("Dtime");
+    m_drive.arcadeDrive(0, m_speed);
   }
 
   // Called once the command ends or is interrupted.
