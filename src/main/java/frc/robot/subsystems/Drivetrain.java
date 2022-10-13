@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -29,6 +31,8 @@ public class Drivetrain extends SubsystemBase {
 
   public Drivetrain() {
     diffDrive.setDeadband(Constants.DEADBAND_SIZE);
+    rightRearTalon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
+    leftRearTalon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
   }
 
   // public void init() {
@@ -48,6 +52,7 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    System.out.printf(" %f", getRightEncoderCount());
     diffDrive.arcadeDrive(
       RobotContainer.getJoyX(),
       RobotContainer.getJoyY()*Constants.SPEED_FACTOR
@@ -61,12 +66,12 @@ public void arcadeDrive(double m_speed, double m_speed2) {
   );
 }
 
-public char[] getRightEncoderCount() {
-    return null;
+public double getRightEncoderCount() {
+    return rightRearTalon.getSelectedSensorVelocity();
 }
 
-public char[] getLeftEncoderCount() {
-    return null;
+public double getLeftEncoderCount() {
+    return leftRearTalon.getSelectedSensorVelocity();
 }
 
 public void resetEncoders() {
