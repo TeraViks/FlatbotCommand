@@ -23,4 +23,15 @@ public final class Constants {
 
     public static final double SPEED_FACTOR = 0.5;
 
+    // Wheel Diameter
+    public static final double WHEEL_DIAMETER = 6.0;
+
+    // Encoder Ticks per Revolution
+    public static final double RIGHT_TICK_P_ROT = 9000.0;
+    public static final double LEFT_TICK_P_ROT = 3000.0;
+
+    // Encoder Ratio right to left
+    public static final double ENCODER_RATIO_RtL = RIGHT_TICK_P_ROT/LEFT_TICK_P_ROT;
+
+
 }

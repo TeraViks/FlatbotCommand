@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import frc.robot.RobotContainer;
 
+import java.lang.Math;
+
 public class Drivetrain extends SubsystemBase {
   /** Creates a new Drivetrain. */
   private final WPI_TalonSRX rightFrontTalon = new WPI_TalonSRX(Constants.RIGHT_FRONT_CAN_ID);
@@ -52,7 +54,7 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    System.out.printf(" %f", getRightEncoderCount());
+    System.out.printf(" %.0f/%.0f", getLeftDistanceInch(),  getRightDistanceInch());
     diffDrive.arcadeDrive(
       RobotContainer.getJoyX(),
       RobotContainer.getJoyY()*Constants.SPEED_FACTOR
@@ -67,23 +69,27 @@ public void arcadeDrive(double m_speed, double m_speed2) {
 }
 
 public double getRightEncoderCount() {
-    return rightRearTalon.getSelectedSensorVelocity();
+    return rightRearTalon.getSelectedSensorPosition();
 }
 
 public double getLeftEncoderCount() {
-    return leftRearTalon.getSelectedSensorVelocity();
+  // Could possibly cause a rounding issue consider to change to int
+    return leftRearTalon.getSelectedSensorPosition() * Constants.ENCODER_RATIO_RtL;
 }
 
 public void resetEncoders() {
+  leftRearTalon.setSelectedSensorPosition(0.0);
+  rightRearTalon.setSelectedSensorPosition(0.0);
 }
 
-public int getRightDistanceInch() {
-    return 0;
+public double getRightDistanceInch() {
+  return Constants.WHEEL_DIAMETER * Math.PI * rightRearTalon.getSelectedSensorPosition() / Constants.RIGHT_TICK_P_ROT;
 }
 
-public int getLeftDistanceInch() {
-    return 0;
+public double getLeftDistanceInch() {
+  return Constants.WHEEL_DIAMETER * Math.PI * leftRearTalon.getSelectedSensorPosition() / Constants.LEFT_TICK_P_ROT;
 }
+
 public double getAverageDistanceInch() {
   return (getLeftDistanceInch() + getRightDistanceInch()) / 2.0;
 }
