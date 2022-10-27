@@ -35,6 +35,7 @@ public class Drivetrain extends SubsystemBase {
     diffDrive.setDeadband(Constants.DEADBAND_SIZE);
     rightRearTalon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
     leftRearTalon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
+    resetEncoders();
   }
 
   // public void init() {
@@ -54,8 +55,12 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    System.out.printf(" %.0f/%.0f", getLeftDistanceInch(),  getRightDistanceInch());
-    diffDrive.arcadeDrive(
+   if (Math.random() <= 0.1){
+      System.out.println("--------");
+      System.out.println(getLeftDistanceInch());
+      System.out.println(getRightDistanceInch());
+    }
+      diffDrive.arcadeDrive(
       RobotContainer.getJoyX(),
       RobotContainer.getJoyY()*Constants.SPEED_FACTOR
     );
@@ -69,12 +74,11 @@ public void arcadeDrive(double m_speed, double m_speed2) {
 }
 
 public double getRightEncoderCount() {
-    return rightRearTalon.getSelectedSensorPosition();
+    return -rightRearTalon.getSelectedSensorPosition();
 }
 
 public double getLeftEncoderCount() {
-  // Could possibly cause a rounding issue consider to change to int
-    return leftRearTalon.getSelectedSensorPosition() * Constants.ENCODER_RATIO_RtL;
+    return leftRearTalon.getSelectedSensorPosition();
 }
 
 public void resetEncoders() {
@@ -83,11 +87,11 @@ public void resetEncoders() {
 }
 
 public double getRightDistanceInch() {
-  return Constants.WHEEL_DIAMETER * Math.PI * rightRearTalon.getSelectedSensorPosition() / Constants.RIGHT_TICK_P_ROT;
+  return Constants.WHEEL_DIAMETER * Math.PI * getRightEncoderCount() / Constants.TICK_P_ROT;
 }
 
 public double getLeftDistanceInch() {
-  return Constants.WHEEL_DIAMETER * Math.PI * leftRearTalon.getSelectedSensorPosition() / Constants.LEFT_TICK_P_ROT;
+  return Constants.WHEEL_DIAMETER * Math.PI * getLeftEncoderCount() / Constants.TICK_P_ROT;
 }
 
 public double getAverageDistanceInch() {
