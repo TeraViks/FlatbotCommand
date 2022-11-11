@@ -7,11 +7,12 @@ package frc.robot.commands;
 import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.MathUtil;
 
 public class DriveDistance extends CommandBase {
   private final Drivetrain m_drive;
   private final double m_distance;
-  private final double m_speed;
+  private final double m_maxSpeed;
   private final PIDController m_rightPIDcontroller;
   private final PIDController m_leftPIDcontroller;
   private final double m_rightkP;
@@ -29,9 +30,9 @@ public class DriveDistance extends CommandBase {
    * @param inches The number of inches the robot will drive
    * @param drive The drivetrain subsystem on which this command will run
    */
-  public DriveDistance(double speed, double inches, Drivetrain drive) {
+  public DriveDistance(double maxSpeed, double inches, Drivetrain drive) {
     m_distance = inches;
-    m_speed = speed;
+    m_maxSpeed = maxSpeed;
     m_drive = drive;
     // Potential values that worked for another flatbot -- Good starting place
     m_rightkP = 0.5;
@@ -54,7 +55,7 @@ public class DriveDistance extends CommandBase {
     m_rightPIDcontroller.reset();
     /** 
      * Could add potential tuning paramters such as:
-     * pid.setIntegratorRange(minRange, maxRange) -- The integrator will only activate once inside the range of the parameters
+     * pid.setIntegratorRange(minRange, maxRange)
     */
   }
 
@@ -63,9 +64,9 @@ public class DriveDistance extends CommandBase {
   public void execute() {
     m_drive.tankDrive(
       //Left PID Controller Calculations
-      m_leftPIDcontroller.calculate(m_drive.getLeftDistanceInch(), m_distance), // Could possible use the MathUtil.clamp() if we need to keep the speed down
+      MathUtil.clamp(m_leftPIDcontroller.calculate(m_drive.getLeftDistanceInch(), m_distance), -m_maxSpeed, m_maxSpeed),
       //Right PID Controller Calculations
-      m_rightPIDcontroller.calculate(m_drive.getRightDistanceInch(), m_distance),
+      MathUtil.clamp(m_rightPIDcontroller.calculate(m_drive.getRightDistanceInch(), m_distance), -m_maxSpeed, m_maxSpeed),
       // Squared Inputs
       false
       );
