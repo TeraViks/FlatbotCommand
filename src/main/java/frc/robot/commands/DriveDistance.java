@@ -6,11 +6,20 @@ package frc.robot.commands;
 
 import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.math.controller.PIDController;
 
 public class DriveDistance extends CommandBase {
   private final Drivetrain m_drive;
   private final double m_distance;
   private final double m_speed;
+  private final PIDController m_rightPIDcontroller;
+  private final PIDController m_leftPIDcontroller;
+  private final double m_rightkP;
+  private final double m_rightkI;
+  private final double m_rightkD;
+  private final double m_leftkP;
+  private final double m_leftkI;
+  private final double m_leftkD;
 
   /**
    * Creates a new DriveDistance. This command will drive your your robot for a desired distance at
@@ -24,26 +33,47 @@ public class DriveDistance extends CommandBase {
     m_distance = inches;
     m_speed = speed;
     m_drive = drive;
+    m_rightkP = 0;
+    m_rightkI = 0;
+    m_rightkD = 0;
+    m_leftkP = 0;
+    m_leftkI = 0;
+    m_leftkD = 0;
+    m_rightPIDcontroller = new PIDController(m_rightkP, m_rightkI, m_rightkD);
+    m_leftPIDcontroller = new PIDController(m_leftkP, m_leftkI, m_leftkD);
     addRequirements(drive);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_drive.arcadeDrive(0, 0);
+    m_drive.tankDrive(0, 0, false);
     m_drive.resetEncoders();
+    m_leftPIDcontroller.reset();
+    m_rightPIDcontroller.reset();
+    /** 
+     * Could add potential tuning paramters such as:
+     * pid.setIntegratorRange(minRange, maxRange) -- The integrator will only activate once inside the range of the parameters
+    */
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_drive.arcadeDrive(m_speed, 0);
+    m_drive.tankDrive(
+      //Left PID Controller Calculations
+      m_leftPIDcontroller.calculate(m_drive.getLeftEncoderCount(), m_distance), //Could possible use the MathUtil.clamp() if we need to keep the speed down
+      //Right PID Controller Calculations
+      m_rightPIDcontroller.calculate(m_drive.getRightEncoderCount(), m_distance),
+      // Squared Inputs
+      false
+      );
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_drive.arcadeDrive(0, 0);
+    m_drive.tankDrive(0, 0, false);
   }
 
   // Returns true when the command should end.
