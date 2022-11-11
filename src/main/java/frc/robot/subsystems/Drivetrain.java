@@ -73,11 +73,12 @@ public void arcadeDrive(double m_speed, double m_speed2) {
   );
 }
 
-public void tankDrive(double leftSpeed, double rightSpeed, boolean squareInputs){
-  diffDrive.tankDrive(leftSpeed,
-  rightSpeed,
-  squareInputs
-  );
+public void tankDrive(double leftSpeed, double rightSpeed, boolean squaredInputs) {
+  diffDrive.tankDrive(
+    leftSpeed,
+    rightSpeed,
+    squaredInputs
+   );
 }
 
 public double getRightEncoderCount() {
