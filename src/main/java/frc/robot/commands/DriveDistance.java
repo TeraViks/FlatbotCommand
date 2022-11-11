@@ -33,12 +33,13 @@ public class DriveDistance extends CommandBase {
     m_distance = inches;
     m_speed = speed;
     m_drive = drive;
-    m_rightkP = 0;
-    m_rightkI = 0;
-    m_rightkD = 0;
-    m_leftkP = 0;
-    m_leftkI = 0;
-    m_leftkD = 0;
+    // Potential values that worked for another flatbot -- Good starting place
+    m_rightkP = 0.5;
+    m_rightkI = 0.5;
+    m_rightkD = 0.1;
+    m_leftkP = 0.5;
+    m_leftkI = 0.5;
+    m_leftkD = 0.1;
     m_rightPIDcontroller = new PIDController(m_rightkP, m_rightkI, m_rightkD);
     m_leftPIDcontroller = new PIDController(m_leftkP, m_leftkI, m_leftkD);
     addRequirements(drive);
