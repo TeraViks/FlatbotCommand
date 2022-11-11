@@ -1,3 +1,4 @@
+
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
@@ -63,9 +64,9 @@ public class DriveDistance extends CommandBase {
   public void execute() {
     m_drive.tankDrive(
       //Left PID Controller Calculations
-      m_leftPIDcontroller.calculate(m_drive.getLeftEncoderCount(), m_distance), //Could possible use the MathUtil.clamp() if we need to keep the speed down
+      m_leftPIDcontroller.calculate(m_drive.getLeftDistanceInch(), m_distance), //Could possible use the MathUtil.clamp() if we need to keep the speed down
       //Right PID Controller Calculations
-      m_rightPIDcontroller.calculate(m_drive.getRightEncoderCount(), m_distance),
+      m_rightPIDcontroller.calculate(m_drive.getRightDistanceInch(), m_distance),
       // Squared Inputs
       false
       );
