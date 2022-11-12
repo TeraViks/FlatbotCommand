@@ -27,5 +27,5 @@ public final class Constants {
     public static final double WHEEL_DIAMETER = 6.0;
 
     // Encoder Ticks per Revolution
-    public static final double TICK_P_ROT = 9000.0;
+    public static final double TICK_P_ROT = 10702.0;
 }
