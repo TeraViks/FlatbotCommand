@@ -57,8 +57,8 @@ public class Drivetrain extends SubsystemBase {
     // This method will be called once per scheduler run
    if (Math.random() <= 0.1){
       System.out.println("--------");
-      System.out.println(getLeftDistanceInch());
-      System.out.println(getRightDistanceInch());
+      System.out.println(getLeftEncoderCount());
+      System.out.println(getRightEncoderCount());
     }
       diffDrive.arcadeDrive(
       RobotContainer.getJoyX(),
@@ -73,12 +73,27 @@ public void arcadeDrive(double m_speed, double m_speed2) {
   );
 }
 
+public void tankDrive(double leftSpeed, double rightSpeed, boolean squareInputs){
+  diffDrive.tankDrive(leftSpeed,
+  rightSpeed,
+  squareInputs
+  );
+}
+
 public double getRightEncoderCount() {
     return -rightRearTalon.getSelectedSensorPosition();
 }
 
 public double getLeftEncoderCount() {
     return leftRearTalon.getSelectedSensorPosition();
+}
+
+public double getLeftEncoderVelocity() {
+  return leftRearTalon.getSelectedSensorVelocity();
+}
+
+public double getRightEncoderVelocity() {
+  return -rightRearTalon.getSelectedSensorVelocity();
 }
 
 public void resetEncoders() {
