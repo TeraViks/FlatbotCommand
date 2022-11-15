@@ -72,7 +72,6 @@ public void arcadeDrive(double m_speed, double m_speed2) {
     m_speed2
   );
 }
-
 public void tankDrive(double leftSpeed, double rightSpeed, boolean squaredInputs) {
   diffDrive.tankDrive(
     -leftSpeed,
@@ -87,6 +86,14 @@ public double getRightEncoderCount() {
 
 public double getLeftEncoderCount() {
     return leftRearTalon.getSelectedSensorPosition();
+}
+
+public double getLeftEncoderVelocity() {
+  return leftRearTalon.getSelectedSensorVelocity();
+}
+
+public double getRightEncoderVelocity() {
+  return -rightRearTalon.getSelectedSensorVelocity();
 }
 
 public void resetEncoders() {
