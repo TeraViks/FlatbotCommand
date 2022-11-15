@@ -35,12 +35,12 @@ public class DriveDistance extends CommandBase {
     m_maxSpeed = maxSpeed;
     m_drive = drive;
     // Potential values that worked for another flatbot -- Good starting place
-    m_rightkP = 0.5;
-    m_rightkI = 0.5;
-    m_rightkD = 0.1;
-    m_leftkP = 0.5;
-    m_leftkI = 0.5;
-    m_leftkD = 0.1;
+    m_rightkP = 0.008;
+    m_rightkI = 0.0009;
+    m_rightkD = 0.001;
+    m_leftkP = 0.008;
+    m_leftkI = 0.0009;
+    m_leftkD = 0.001;
     m_rightPIDcontroller = new PIDController(m_rightkP, m_rightkI, m_rightkD);
     m_leftPIDcontroller = new PIDController(m_leftkP, m_leftkI, m_leftkD);
     addRequirements(drive);
@@ -52,7 +52,10 @@ public class DriveDistance extends CommandBase {
     m_drive.tankDrive(0, 0, false);
     m_drive.resetEncoders();
     m_leftPIDcontroller.reset();
+    System.out.println("hello");
     m_rightPIDcontroller.reset();
+    m_rightPIDcontroller.setIntegratorRange(-m_maxSpeed, m_maxSpeed);
+    m_leftPIDcontroller.setIntegratorRange(-m_maxSpeed, m_maxSpeed);
     /** 
      * Could add potential tuning paramters such as:
      * pid.setIntegratorRange(minRange, maxRange)
@@ -62,11 +65,18 @@ public class DriveDistance extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    System.out.println("--------");
+    double leftPIDValue = m_leftPIDcontroller.calculate(m_drive.getLeftDistanceInch(), m_distance);
+    double rightPIDValue = m_rightPIDcontroller.calculate(m_drive.getRightDistanceInch(), m_distance);
+    System.out.println(leftPIDValue);
+    System.out.println(m_drive.getLeftDistanceInch());
+    System.out.println(rightPIDValue);
+    System.out.println(m_drive.getRightDistanceInch());
     m_drive.tankDrive(
       //Left PID Controller Calculations
-      MathUtil.clamp(m_leftPIDcontroller.calculate(m_drive.getLeftDistanceInch(), m_distance), -m_maxSpeed, m_maxSpeed),
+      MathUtil.clamp(leftPIDValue, -m_maxSpeed, m_maxSpeed),
       //Right PID Controller Calculations
-      MathUtil.clamp(m_rightPIDcontroller.calculate(m_drive.getRightDistanceInch(), m_distance), -m_maxSpeed, m_maxSpeed),
+      MathUtil.clamp(rightPIDValue, -m_maxSpeed, m_maxSpeed),
       // Squared Inputs
       false
       );
@@ -82,6 +92,6 @@ public class DriveDistance extends CommandBase {
   @Override
   public boolean isFinished() {
     // Compare distance travelled from start to desired distance
-    return Math.abs(m_drive.getAverageDistanceInch()) >= m_distance;
+    return Math.abs(m_distance - m_drive.getLeftDistanceInch()) <= 1 && Math.abs(m_distance - m_drive.getRightDistanceInch()) <= 1;
   }
 }
