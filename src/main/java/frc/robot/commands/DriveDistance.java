@@ -34,13 +34,16 @@ public class DriveDistance extends CommandBase {
     m_distance = inches;
     m_maxSpeed = maxSpeed;
     m_drive = drive;
-    // Potential values that worked for another flatbot -- Good starting place
-    m_rightkP = 0.008;
-    m_rightkI = 0.0009;
-    m_rightkD = 0.001;
-    m_leftkP = 0.008;
-    m_leftkI = 0.0009;
-    m_leftkD = 0.001;
+
+    m_leftkP = 0.045;
+    m_rightkP = 0.045;
+
+    m_leftkI = 0.000;
+    m_rightkI = 0.000;
+
+    m_leftkD = 0.00;
+    m_rightkD = 0.00;
+
     m_rightPIDcontroller = new PIDController(m_rightkP, m_rightkI, m_rightkD);
     m_leftPIDcontroller = new PIDController(m_leftkP, m_leftkI, m_leftkD);
     addRequirements(drive);
