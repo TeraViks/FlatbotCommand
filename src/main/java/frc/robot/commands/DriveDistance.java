@@ -13,17 +13,17 @@ public class DriveDistance extends CommandBase {
   private final Drivetrain m_drive;
   private final double m_distance;
   private final double m_maxSpeed;
-  private final PIDController m_rightPIDcontroller;
-  private final PIDController m_rightPIDcontrollerLimit;
-  private final PIDController m_leftPIDcontroller;
-  private final PIDController m_leftPIDcontrollerLimit;
+  private final PIDController m_rightPIDcontrollerFar;
+  private final PIDController m_rightPIDcontrollerClose;
+  private final PIDController m_leftPIDcontrollerFar;
+  private final PIDController m_leftPIDcontrollerClose;
   private final double m_rightkP;
   private final double m_rightkI;
   private final double m_rightkD;
   private final double m_leftkP;
   private final double m_leftkI;
   private final double m_leftkD;
-  private final double iLimit;
+  private final double m_iLimit;
 
   /**
    * Creates a new DriveDistance. This command will drive your your robot for a desired distance at
@@ -37,7 +37,7 @@ public class DriveDistance extends CommandBase {
     m_distance = inches;
     m_maxSpeed = maxSpeed;
     m_drive = drive;
-    iLimit = 15;
+    m_iLimit = 40;
 
     m_leftkP = 0.045;
     m_rightkP = 0.045;
@@ -45,13 +45,13 @@ public class DriveDistance extends CommandBase {
     m_leftkI = 0.000;
     m_rightkI = 0.000;
 
-    m_leftkD = 0.00;
-    m_rightkD = 0.00;
+    m_leftkD = 0.0055;
+    m_rightkD = 0.0048;
 
-    m_rightPIDcontroller = new PIDController(m_rightkP, m_rightkI, m_rightkD);
-    m_rightPIDcontrollerLimit = new PIDController(m_rightkP, 0, m_rightkD);
-    m_leftPIDcontroller = new PIDController(m_leftkP, m_leftkI, m_leftkD);
-    m_leftPIDcontrollerLimit = new PIDController(m_leftkP, 0, m_leftkD);
+    m_rightPIDcontrollerClose = new PIDController(m_rightkP, m_rightkI, m_rightkD);
+    m_rightPIDcontrollerFar = new PIDController(m_rightkP, 0, m_rightkD);
+    m_leftPIDcontrollerClose = new PIDController(m_leftkP, m_leftkI, m_leftkD);
+    m_leftPIDcontrollerFar = new PIDController(m_leftkP, 0, m_leftkD);
     addRequirements(drive);
   }
 
@@ -60,11 +60,13 @@ public class DriveDistance extends CommandBase {
   public void initialize() {
     m_drive.tankDrive(0, 0, false);
     m_drive.resetEncoders();
-    m_leftPIDcontroller.reset();
+    m_leftPIDcontrollerFar.reset();
+    m_leftPIDcontrollerClose.reset();
     System.out.println("hello");
-    m_rightPIDcontroller.reset();
-    m_rightPIDcontroller.setIntegratorRange(-m_maxSpeed, m_maxSpeed);
-    m_leftPIDcontroller.setIntegratorRange(-m_maxSpeed, m_maxSpeed);
+    m_rightPIDcontrollerFar.reset();
+    m_rightPIDcontrollerClose.reset();
+    m_rightPIDcontrollerClose.setIntegratorRange(-1, 1);
+    m_leftPIDcontrollerClose.setIntegratorRange(-1, 1);
     /** 
      * Could add potential tuning paramters such as:
      * pid.setIntegratorRange(minRange, maxRange)
@@ -74,11 +76,15 @@ public class DriveDistance extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double leftPIDValue = m_leftPIDcontrollerLimit.calculate(m_drive.getLeftDistanceInch(), m_distance);
-    double rightPIDValue = m_rightPIDcontrollerLimit.calculate(m_drive.getRightDistanceInch(), m_distance);
-    if (m_drive.getAverageDistanceInch() - m_distance / m_drive.getAverageDistanceInch() * 100 <= iLimit){
-       leftPIDValue = m_leftPIDcontroller.calculate(m_drive.getLeftDistanceInch(), m_distance);
-       rightPIDValue = m_rightPIDcontroller.calculate(m_drive.getRightDistanceInch(), m_distance);
+    double leftPIDValue, rightPIDValue;
+
+    if (m_distance - m_drive.getAverageDistanceInch() >= m_iLimit){
+       leftPIDValue = m_leftPIDcontrollerFar.calculate(m_drive.getLeftDistanceInch(), m_distance);
+       rightPIDValue = m_rightPIDcontrollerFar.calculate(m_drive.getRightDistanceInch(), m_distance);
+    }
+    else {
+      leftPIDValue = m_leftPIDcontrollerClose.calculate(m_drive.getLeftDistanceInch(), m_distance);
+      rightPIDValue = m_rightPIDcontrollerClose.calculate(m_drive.getRightDistanceInch(), m_distance);
     }
 
     System.out.println("--------");
@@ -106,6 +112,6 @@ public class DriveDistance extends CommandBase {
   @Override
   public boolean isFinished() {
     // Compare distance travelled from start to desired distance
-    return Math.abs(m_distance - m_drive.getLeftDistanceInch()) <= 1 && Math.abs(m_distance - m_drive.getRightDistanceInch()) <= 1;
+    return Math.abs(m_distance - m_drive.getAverageDistanceInch()) <= 1;
   }
 }
