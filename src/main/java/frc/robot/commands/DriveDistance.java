@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.Drivetrain;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.MathUtil;
@@ -45,7 +46,7 @@ public class DriveDistance extends CommandBase {
     m_leftkI = 0.000;
     m_rightkI = 0.000;
 
-    m_leftkD = 0.0055;
+    m_leftkD = 0.0048;
     m_rightkD = 0.0048;
 
     m_rightPIDcontrollerClose = new PIDController(m_rightkP, m_rightkI, m_rightkD);
@@ -88,10 +89,14 @@ public class DriveDistance extends CommandBase {
     }
 
     System.out.println("--------");
-    System.out.println(leftPIDValue);
-    System.out.println(m_drive.getLeftDistanceInch());
-    System.out.println(rightPIDValue);
-    System.out.println(m_drive.getRightDistanceInch());
+    SmartDashboard.putNumber("leftPIDValue", leftPIDValue);
+    SmartDashboard.putNumber("leftDistanceInches", m_drive.getLeftDistanceInch());
+    SmartDashboard.putNumber("rightPIDValue", rightPIDValue);
+    SmartDashboard.putNumber("rightDistanceInches", m_drive.getRightDistanceInch());
+    SmartDashboard.putNumber("leftError", m_distance - m_drive.getLeftDistanceInch());
+    SmartDashboard.putNumber("RightError", m_distance - m_drive.getRightDistanceInch());
+    SmartDashboard.putNumber("setpoint", m_distance);
+
     m_drive.tankDrive(
       //Left PID Controller Calculations
       MathUtil.clamp(leftPIDValue, -m_maxSpeed, m_maxSpeed),
