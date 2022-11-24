@@ -77,21 +77,30 @@ public class DriveDistance extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    PIDController leftPID, rightPID;
     double leftPIDValue, rightPIDValue;
 
     if (m_distance - m_drive.getAverageDistanceInch() >= m_iLimit){
-       leftPIDValue = m_leftPIDcontrollerFar.calculate(m_drive.getLeftDistanceInch(), m_distance);
-       rightPIDValue = m_rightPIDcontrollerFar.calculate(m_drive.getRightDistanceInch(), m_distance);
+       leftPID = m_leftPIDcontrollerFar;
+       rightPID = m_rightPIDcontrollerFar;
     }
     else {
-      leftPIDValue = m_leftPIDcontrollerClose.calculate(m_drive.getLeftDistanceInch(), m_distance);
-      rightPIDValue = m_rightPIDcontrollerClose.calculate(m_drive.getRightDistanceInch(), m_distance);
+      leftPID = m_leftPIDcontrollerClose;
+      rightPID = m_rightPIDcontrollerClose;
     }
+    leftPIDValue = leftPID.calculate(m_drive.getLeftDistanceInch(), m_distance);
+    rightPIDValue = rightPID.calculate(m_drive.getRightDistanceInch(), m_distance);
 
-    System.out.println("--------");
+
+    SmartDashboard.putNumber("leftPValue", leftPID.getP());
+    SmartDashboard.putNumber("leftIValue", leftPID.getI());
+    SmartDashboard.putNumber("leftDValue", leftPID.getD());
+    SmartDashboard.putNumber("rightPValue", rightPID.getP());
+    SmartDashboard.putNumber("rightIValue", rightPID.getI());
+    SmartDashboard.putNumber("rightDValue", rightPID.getD());
     SmartDashboard.putNumber("leftPIDValue", leftPIDValue);
-    SmartDashboard.putNumber("leftDistanceInches", m_drive.getLeftDistanceInch());
     SmartDashboard.putNumber("rightPIDValue", rightPIDValue);
+    SmartDashboard.putNumber("leftDistanceInches", m_drive.getLeftDistanceInch());
     SmartDashboard.putNumber("rightDistanceInches", m_drive.getRightDistanceInch());
     SmartDashboard.putNumber("leftError", m_distance - m_drive.getLeftDistanceInch());
     SmartDashboard.putNumber("RightError", m_distance - m_drive.getRightDistanceInch());
