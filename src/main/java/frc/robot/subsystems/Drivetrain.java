@@ -8,11 +8,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotContainer;
 
 import java.lang.Math;
@@ -29,12 +31,16 @@ public class Drivetrain extends SubsystemBase {
   private final MotorControllerGroup leftDrive = new MotorControllerGroup(leftFrontTalon, leftRearTalon);
 
   // Drivetrain
-  private final DifferentialDrive diffDrive = new DifferentialDrive(leftDrive, rightDrive);
+  // private final DifferentialDrive diffDrive = new DifferentialDrive(leftDrive, rightDrive);
 
   public Drivetrain() {
-    diffDrive.setDeadband(Constants.DEADBAND_SIZE);
+    // diffDrive.setDeadband(Constants.DEADBAND_SIZE);
     rightRearTalon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
     leftRearTalon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
+    rightFrontTalon.setInverted(true);
+    rightRearTalon.setInverted(true);
+    leftFrontTalon.setInverted(false);
+    leftRearTalon.setInverted(false);
     resetEncoders();
   }
 
@@ -55,34 +61,37 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-   if (Math.random() <= 0.1){
-      // System.out.println("--------");
-      // System.out.println(getLeftDistanceInch());
-      // System.out.println(getRightDistanceInch());
-    }
-      diffDrive.arcadeDrive(
-      RobotContainer.getJoyX(),
-      RobotContainer.getJoyY()*Constants.SPEED_FACTOR
-    );
+    //   diffDrive.arcadeDrive(
+    //   RobotContainer.getJoyX(),
+    //   RobotContainer.getJoyY()*Constants.SPEED_FACTOR
+    // );
   }
 
 public void arcadeDrive(double m_speed, double m_speed2) {
-  diffDrive.arcadeDrive(
-    m_speed,
-    m_speed2
-  );
+  // diffDrive.arcadeDrive(
+  //   m_speed,
+  //   m_speed2
+  // );
 }
 
 public void tankDrive(double leftSpeed, double rightSpeed, boolean squaredInputs) {
-  diffDrive.tankDrive(
-    -leftSpeed,
-    rightSpeed,
-    squaredInputs
-   );
+  // diffDrive.tankDrive(
+  //   -leftSpeed,
+  //   rightSpeed,
+  //   squaredInputs
+  //  );
+}
+
+private static double getTicksFromInches(double inches) {
+  return Constants.TICK_P_ROT * inches / (Math.PI * Constants.WHEEL_DIAMETER);
+}
+
+private static double getInchesFromTicks(double ticks) {
+  return Constants.WHEEL_DIAMETER * Math.PI * ticks / Constants.TICK_P_ROT; 
 }
 
 public double getRightEncoderCount() {
-    return -rightRearTalon.getSelectedSensorPosition();
+    return rightRearTalon.getSelectedSensorPosition();
 }
 
 public double getLeftEncoderCount() {
@@ -94,7 +103,7 @@ public double getLeftEncoderVelocity() {
 }
 
 public double getRightEncoderVelocity() {
-  return -rightRearTalon.getSelectedSensorVelocity();
+  return rightRearTalon.getSelectedSensorVelocity();
 }
 
 public void resetEncoders() {
@@ -103,14 +112,27 @@ public void resetEncoders() {
 }
 
 public double getRightDistanceInch() {
-  return Constants.WHEEL_DIAMETER * Math.PI * getRightEncoderCount() / Constants.TICK_P_ROT;
+  return getInchesFromTicks(getRightEncoderCount());
+  // return Constants.WHEEL_DIAMETER * Math.PI * getRightEncoderCount() / Constants.TICK_P_ROT;
 }
 
 public double getLeftDistanceInch() {
-  return Constants.WHEEL_DIAMETER * Math.PI * getLeftEncoderCount() / Constants.TICK_P_ROT;
+  return getInchesFromTicks(getLeftEncoderCount());
+  // return Constants.WHEEL_DIAMETER * Math.PI * getLeftEncoderCount() / Constants.TICK_P_ROT;
 }
 
 public double getAverageDistanceInch() {
   return (getLeftDistanceInch() + getRightDistanceInch()) / 2.0;
+}
+
+public void driveDistance(double maxSpeed, double inches) {
+  resetEncoders();
+  double d = -getTicksFromInches(inches);
+  SmartDashboard.putNumber("Wanted encoder count", d);
+  leftRearTalon.set(ControlMode.Position, d);
+  leftFrontTalon.set(ControlMode.Position, d);
+
+  rightRearTalon.set(ControlMode.Position, d);
+  rightFrontTalon.set(ControlMode.Position, d);
 }
 }
