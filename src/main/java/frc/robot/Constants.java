@@ -21,8 +21,6 @@ public final class Constants {
     // Controller Perameters
     public static final double DEADBAND_SIZE = 0.02;
 
-    public static final double SPEED_FACTOR = 0.5;
-
     // Wheel Diameter
     public static final double WHEEL_DIAMETER = 6.0;
 
