@@ -61,8 +61,8 @@ public class Drivetrain extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
       diffDrive.arcadeDrive(
-      RobotContainer.getJoyY(),
-      -RobotContainer.getJoyX(),
+      RobotContainer.getJoyY()*Constants.kSpeedFactor,
+      -RobotContainer.getJoyX()*Constants.kSpeedFactor,
       true
     );
   }

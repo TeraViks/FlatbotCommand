@@ -26,4 +26,6 @@ public final class Constants {
 
     // Encoder Ticks per Revolution
     public static final double TICK_P_ROT = 10702.0;
+
+    public static final double kSpeedFactor = 0.5;
 }
